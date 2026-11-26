@@ -12,6 +12,8 @@
 | `bookmarklets/*.js` | 各書籤的可讀原始碼（不含 `javascript:` 前綴） |
 | `tools/build.js` | 讀 `bookmarklets/*.js`，驗證語法並重新產生 `index.html` |
 | `surgery-schedule/` | 手術排程 Bookmarklet 產生器（純靜態，無需建置） |
+| `surgery-schedule/buildscript.js` | 把一份設定轉成書籤程式碼（產生器與目錄頁整包下載共用，含 `GENERATOR_VERSION`） |
+| `assets/bookmarks-export.js` | 產生 Chrome/Edge「匯入書籤」HTML 並下載（共用） |
 | `surgery-schedule/data/procedures.js` | HIS 個案車術式清單（更新術式只改這裡，並同步改檔內日期） |
 | `surgery-schedule/data/presets.js` | 內建預設集，所有人可見（唯讀） |
 
@@ -21,6 +23,7 @@
 - **新增書籤**：新增 `bookmarklets/<id>.js`，在 `tools/build.js` 的 `tools` 清單加一筆說明 → `node tools/build.js`。
 - **更新術式清單**：改 `surgery-schedule/data/procedures.js` 與 `PROCEDURES_DATE`。
 - **改產生器**：改 `surgery-schedule/app.js` 時，同步更新檔頭的 `GENERATOR_VERSION`；生成的書籤結尾提示會顯示此版本，方便判斷舊書籤是否需要重新產生。
+- **整包書籤下載**：目錄頁的下載按鈕會自動包含 `bookmarklets/` 的工具與 `data/presets.js` 的全部內建預設，新增或修改後不需另外維護。
 - GitHub Pages 有數分鐘的快取，更新後若看到舊版，稍等或強制重新整理。
 
 ## 注意

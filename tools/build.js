@@ -95,6 +95,7 @@ const cards = built.map(t => `
 const codeMap = {};
 built.forEach(t => { codeMap[t.id] = 'javascript:' + t.body; });
 const codeJson = JSON.stringify(codeMap).replace(/</g, '\\u003c');
+const toolsJson = JSON.stringify(built.map(t => ({ title: t.title, href: t.href }))).replace(/</g, '\\u003c');
 
 const html = `<!DOCTYPE html>
 <html lang="zh-Hant">
@@ -127,6 +128,8 @@ const html = `<!DOCTYPE html>
   @media (prefers-color-scheme: dark) { a.drag { color:#0d1220; } }
   button.copy { font:inherit; background:transparent; color:var(--fg); border:1px solid var(--line); border-radius:8px; padding:8px 14px; cursor:pointer; }
   button.copy:hover { border-color:var(--accent); }
+  button.dlbtn { font:inherit; background:var(--accent); color:#fff; border:0; border-radius:8px; padding:9px 16px; font-weight:600; cursor:pointer; }
+  @media (prefers-color-scheme: dark) { button.dlbtn { color:#0d1220; } }
   .notes { color:var(--muted); font-size:.92rem; padding-left:1.2em; margin:8px 0; }
   code { background:var(--code); padding:1px 5px; border-radius:4px; font-size:.88em; }
   details { margin-top:10px; }
@@ -152,6 +155,18 @@ const html = `<!DOCTYPE html>
     </ol>
   </section>
 
+  <section class="how">
+    <h2>📁 整包安裝（Chrome / Edge）</h2>
+    <p style="margin:0 0 10px">一次拿到所有書籤：兩個工具書籤＋全部「手術排程預約」內建預設，放在同一個資料夾。</p>
+    <ol>
+      <li>按下面的按鈕下載 <code>femhgs-bookmarks.html</code>。</li>
+      <li>Chrome 開書籤管理員（<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>）→ 右上角 ⋮ →「匯入書籤」→ 選剛下載的檔案。</li>
+      <li>匯入後會多一個「已匯入 / Imported」資料夾（位置依 Chrome 版本在書籤列或「其他書籤」），把裡面的<strong>「一般外科工具」資料夾</strong>整個拖到書籤列。</li>
+    </ol>
+    <p style="margin:10px 0 0"><button type="button" class="dlbtn" id="dlAll">📁 下載整包書籤</button></p>
+    <p class="lead" style="margin:8px 0 0;font-size:.88rem">預設集或書籤有更新時，需要重新下載匯入；舊的資料夾可直接刪除。</p>
+  </section>
+
 ${generatorCards}
 
 ${cards}
@@ -161,8 +176,13 @@ ${cards}
   </footer>
 </main>
 <div id="toast"></div>
+<script src="surgery-schedule/data/procedures.js"></script>
+<script src="surgery-schedule/data/presets.js"></script>
+<script src="surgery-schedule/buildscript.js"></script>
+<script src="assets/bookmarks-export.js"></script>
 <script>
   var CODE = ${codeJson};
+  var TOOLS = ${toolsJson};
   function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show')},1800); }
   document.querySelectorAll('button.copy').forEach(function(b){
     b.addEventListener('click', function(){
@@ -178,6 +198,26 @@ ${cards}
       } else { fallback(); }
     });
   });
+  function allBookmarkTree(){
+    var presets = window.DEFAULT_PRESETS || {};
+    var names = Object.keys(presets);
+    var children = TOOLS.map(function(t){ return { title: t.title, href: t.href }; });
+    if (names.length && typeof buildScript === 'function') {
+      children.push({ title: '手術排程預約', children: names.map(function(n){
+        return { title: n, href: 'javascript:' + encodeURIComponent(buildScript(presets[n])) };
+      }) });
+    }
+    return [{ title: '一般外科工具', children: children }];
+  }
+  (function(){
+    var btn = document.getElementById('dlAll');
+    var n = countBookmarks(allBookmarkTree());
+    btn.textContent = '📁 下載整包書籤（' + n + ' 個）';
+    btn.addEventListener('click', function(){
+      downloadTextFile('femhgs-bookmarks.html', buildBookmarksHtml(allBookmarkTree()));
+      toast('已下載，請依步驟匯入');
+    });
+  })();
 </script>
 </body>
 </html>
