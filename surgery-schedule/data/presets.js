@@ -229,5 +229,24 @@ window.DEFAULT_PRESETS = {
     "procKeyword": "breast core biopsy(LA)",
     "procPrefix": "",
     "humanFigure": "Front_Right"
+  },
+  "Excision(LA)": {
+    "bmName": "Excision(LA)",
+    "deptCode": "10310",
+    "doctorCode": "94520",
+    "lastFast": "不需禁食",
+    "course": "CourseT",
+    "urgency": "Conventional0",
+    "period": "op-period-assign",
+    "diagnosis": "tumor",
+    "anesthesia": "6",
+    "durH": "0",
+    "durM": "30",
+    "antibiotic": "1",
+    "pacemaker": "0",
+    "location": "ALL",
+    "procKeyword": "Excision(LA)",
+    "procPrefix": "",
+    "humanFigure": ""
   }
 };
