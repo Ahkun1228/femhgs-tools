@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>手術排程 Bookmarklet 產生器</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="top">
+  <h1>手術排程 Bookmarklet 產生器</h1>
+  <span class="who"><a href="../" style="color:#e2f0e5">← 工具目錄</a>　FEMH SurgerySchedule 工具　v<span id="verNo"></span></span>
+</div>
+<div class="subbar">
+  <p>依你要開的個案設定固定欄位，欄位留「不設定」腳本就完全不會去動它。設定好後拖進書籤列即可，無痕視窗也能用。「內建」預設隨網頁提供，自己存的預設只存在這個瀏覽器，不會上傳。</p>
+  <div class="legend">
+    <span><span class="swatch tan"></span>會自動帶入的欄位</span>
+    <span><span class="swatch gray"></span>選填/次要欄位</span>
+    <span><span class="swatch green"></span>產生後的書籤</span>
+  </div>
+</div>
+
+<main>
+  <div class="panel">
+    <h2><span class="n">1</span>書籤名稱</h2>
+    <div class="frow">
+      <div class="fcell">書籤顯示名稱</div>
+      <div class="fbody">
+        <input type="text" id="bmName" value="Left MMG" placeholder="例如：Left MMG / Right Thyroid">
+      </div>
+    </div>
+
+    <h2><span class="n">2</span>基本欄位</h2>
+    <div class="frow">
+      <div class="fcell">科別代碼<span class="badge">Department</span></div>
+      <div class="fbody"><input type="text" id="deptCode" value="10310" placeholder="不設定則留空"></div>
+    </div>
+    <div class="frow">
+      <div class="fcell">醫師代號<span class="badge">SDoctor</span></div>
+      <div class="fbody"><input type="text" id="doctorCode" value="94520" placeholder="不設定則留空"></div>
+    </div>
+    <div class="frow">
+      <div class="fcell optional">最後一次禁食時間</div>
+      <div class="fbody">
+        <select id="lastFast">
+          <option value="">不設定</option>
+          <option value="不需禁食">不需禁食</option>
+          <option value="MN" selected>MN（午夜）</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell">手術類型</div>
+      <div class="fbody">
+        <div class="choice-group" id="courseGroup">
+          <label><input type="radio" name="course" value=""><span>不設定</span></label>
+          <label><input type="radio" name="course" value="CourseT" checked><span>療程</span></label>
+          <label><input type="radio" name="course" value="CourseF"><span>非療程</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell">手術類型（緊急度）</div>
+      <div class="fbody">
+        <div class="choice-group" id="urgencyGroup">
+          <label><input type="radio" name="urgency" value=""><span>不設定</span></label>
+          <label><input type="radio" name="urgency" value="Conventional0" checked><span>常規</span></label>
+          <label><input type="radio" name="urgency" value="Conventional2"><span>急症</span></label>
+          <label><input type="radio" name="urgency" value="Conventional1"><span>緊急</span></label>
+          <label><input type="radio" name="urgency" value="Conventional3"><span>急急診</span></label>
+          <label><input type="radio" name="urgency" value="Conventional4"><span>手術後住院</span></label>
+        </div>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell">時段</div>
+      <div class="fbody">
+        <div class="choice-group" id="periodGroup">
+          <label><input type="radio" name="period" value=""><span>不設定</span></label>
+          <label><input type="radio" name="period" value="op-period-tf"><span>TF(同步舊系統)</span></label>
+          <label><input type="radio" name="period" value="op-period-tf1" checked><span>TF1(09:30~12:00)</span></label>
+          <label><input type="radio" name="period" value="op-period-tf2"><span>TF2(12:30~15:30)</span></label>
+          <label><input type="radio" name="period" value="op-period-tf3"><span>TF3(17:30~20:30)</span></label>
+          <label><input type="radio" name="period" value="op-period-assign"><span>指定</span></label>
+        </div>
+      </div>
+    </div>
+
+    <h2><span class="n">3</span>診斷 / 麻醉 / 時間</h2>
+    <div class="frow">
+      <div class="fcell">診斷<span class="badge">Diagnosis</span></div>
+      <div class="fbody stack"><textarea id="diagnosis" placeholder="不設定則留空">Left breast microcalcifications, BIRADS 4</textarea></div>
+    </div>
+    <div class="frow">
+      <div class="fcell">麻醉類型<span class="badge">AnesthesiaType</span></div>
+      <div class="fbody">
+        <select id="anesthesia">
+          <option value="">不設定</option>
+          <option value="0">0 - Nil</option>
+          <option value="1">1 - GA</option>
+          <option value="2">2 - SA</option>
+          <option value="3">3 - EA</option>
+          <option value="4">4 - IVG</option>
+          <option value="5" selected>5 - Mask</option>
+          <option value="6">6 - LA</option>
+          <option value="7">7 - RA</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell optional">預估手術時間</div>
+      <div class="fbody">
+        <input type="number" id="durH" value="1" min="0" max="23"><span class="unit">小時</span>
+        <input type="number" id="durM" value="0" min="0" max="59" step="5"><span class="unit">分鐘</span>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell">預防性抗生素<span class="badge">Antibiotic</span></div>
+      <div class="fbody">
+        <select id="antibiotic">
+          <option value="">不設定</option>
+          <option value="0">術前已使用抗生素，不須</option>
+          <option value="1" selected>潔淨手術，不須</option>
+          <option value="2">須使用</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell">節律器<span class="badge">Pacemaker</span></div>
+      <div class="fbody">
+        <select id="pacemaker">
+          <option value="">不設定</option>
+          <option value="0" selected>無</option>
+          <option value="1">ICD</option>
+          <option value="2">Pacemaker</option>
+        </select>
+      </div>
+    </div>
+
+    <h2><span class="n">4</span>術式（個案車）</h2>
+    <p class="skip-note">部位代號留「不設定」的話，腳本完全不會打開個案車視窗。</p>
+    <div class="frow">
+      <div class="fcell">部位代號<span class="badge">Location</span></div>
+      <div class="fbody">
+        <select id="location">
+          <option value="">不設定（略過個案車）</option>
+          <option value="ABD">ABD 腹部</option>
+          <option value="ALL">ALL 全身</option>
+          <option value="APP">APP 闌尾</option>
+          <option value="BRE" selected>BRE 乳房</option>
+          <option value="CHO">CHO 膽管</option>
+          <option value="COL">COL 大腸</option>
+          <option value="GAS">GAS 胃部</option>
+          <option value="GBR">GBR 膽囊</option>
+          <option value="IGN">IGN 腹股溝</option>
+          <option value="JEJ">JEJ 小腸</option>
+          <option value="KDN">KDN 腎臟</option>
+          <option value="LIR">LIR 肝臟</option>
+          <option value="MBA">MBA 乳房+腋下</option>
+          <option value="NAV">NAV 臍部</option>
+          <option value="ROH">ROH 股部</option>
+          <option value="TYE">TYE 甲狀腺</option>
+          <option value="VSL">VSL 血管</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell">選擇術式</div>
+      <div class="fbody stack">
+        <select id="procPicker" style="width:100%;">
+          <option value="">請先選部位代號…</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fcell optional">術式關鍵字（可手動修改）</div>
+      <div class="fbody stack"><input type="text" id="procKeyword" value="mamo-guid biopsy" placeholder="例如：mamo-guid biopsy" style="width:100%;"></div>
+    </div>
+    <div class="frow">
+      <div class="fcell optional">術式文字前綴</div>
+      <div class="fbody"><input type="text" id="procPrefix" value="Left" placeholder="例如：Left / Right（可留空）"></div>
+    </div>
+    <p class="hint">選好部位後，上面下拉選單會列出該部位在系統裡「個案車」的全部術式（2026/08 抓取），點選後會自動把精確的術式文字帶進關鍵字欄位；也可以手動修改。腳本會在「已挑選之個案車」清單裡比對第一筆「術式名稱(英)」符合關鍵字的項目，勾選、帶入、確認更新。</p>
+
+    <h2><span class="n">5</span>人形圖</h2>
+    <div class="frow">
+      <div class="fcell">標記位置</div>
+      <div class="fbody">
+        <select id="humanFigure">
+          <option value="">不設定（略過人形圖）</option>
+          <option value="Front">正面無左右</option>
+          <option value="Front_Right">正面右邊</option>
+          <option value="Front_Left" selected>正面左邊</option>
+          <option value="Back">背面無左右</option>
+          <option value="Back_Left">背面左邊</option>
+          <option value="Back_Right">背面右邊</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="generate-btn" id="genBtn">產生 Bookmarklet</button>
+  </div>
+
+  <div class="panel">
+    <h2><span class="n">★</span>已儲存的預設集</h2>
+    <div class="panel-body">
+      <p class="hint" style="padding:10px 0 8px;">「內建」是隨網頁提供的常用預設（唯讀）；自己存的預設只存在<strong>這個瀏覽器</strong>，換電腦或無痕視窗不會帶著走，可用匯出/匯入搬移。請不要存病人個資，只存排程設定。</p>
+      <div id="presetList"></div>
+      <div class="preset-actions">
+        <button class="copy-btn" id="presetSaveBtn">💾 把目前設定存成預設（存在這個瀏覽器）</button>
+        <div class="preset-actions-row">
+          <button class="copy-btn" id="presetExportBtn">匯出自訂預設</button>
+          <button class="copy-btn" id="presetImportBtn">匯入/還原設定</button>
+        </div>
+        <textarea id="presetImportExportArea" style="display:none;" placeholder=""></textarea>
+        <button class="copy-btn" id="presetImportConfirmBtn" style="display:none;background:var(--blue);color:#fff;border-color:var(--blue-dark);">確認匯入</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel sticky">
+    <h2><span class="n">→</span>拖進書籤列即可使用</h2>
+    <div class="bm-slot" id="bmSlot">
+      <div class="placeholder">按左邊「產生 Bookmarklet」後，這裡會出現可拖曳的書籤連結。</div>
+    </div>
+    <ol class="checklist">
+      <li>按 <strong>Ctrl+Shift+B</strong> 打開書籤列（無痕視窗也要開一次）。</li>
+      <li>把左側產生的按鈕直接<strong>拖到書籤列</strong>上放開。</li>
+      <li>之後在「手術排程預約」頁面選好病人、建新排程，點一下該書籤即可自動帶入。</li>
+      <li>跑完腳本會跳出提示視窗，請自行檢查欄位後再按「儲存 (新增)」。</li>
+    </ol>
+  </div>
+</main>
+
+<script src="data/procedures.js"></script>
+<script src="data/presets.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
